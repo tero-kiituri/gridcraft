@@ -1,7 +1,7 @@
 <script lang="ts">
     import Grid from '$lib/components/Grid.svelte';
 
-    export let data;
+    let data;
     let companies = [
         {
             id: "1",
@@ -84,6 +84,18 @@
             group: "E"
         }
     ];
+
+    let columns = ['', 'id', 'name', 'catchPhrase', 'city', 'country', 'group'];
+    let groupBy = $state("");
 </script>
 
-<Grid data={companies} />
+<label for="groupBySelection">Group By:</label>
+<select id="groupBySelection" bind:value={groupBy}>
+	{#each columns as col}
+		<option value={col}>{col}</option>
+	{/each}
+</select>
+
+<br><br>
+
+<Grid data={companies} groupBy={groupBy} />

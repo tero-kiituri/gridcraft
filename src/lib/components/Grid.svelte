@@ -45,7 +45,7 @@
     let sortOrderSecondary = $state(1); // 1 for ascending, -1 for descending
     let expandedGroups: ExpandedGroups = $state({});
     let gridData: GridRow<T>[] = $state([]);
-    let groupHeaders: GroupHeader<T>[] = $state([]);
+    let groupHeaders: GroupHeader<GridRow<T>>[] = $state([]);
     let groupHeadersUnpaged: GroupHeader<T>[] = $state([]);
 
     function assignAutoColumns() {
@@ -237,7 +237,8 @@
                     </theme.grid.groupby.cell>
                 </theme.grid.groupby.container>
                 {#if header.expanded}
-                    {#each header.data as row, index (getUniqueKey(row))}
+                    {#each header.data as rowData, index (rowData.key)}
+                        {@const row = rowData.data}
                         <theme.grid.body.row isOdd={(index + 1) % 2 == 1} index={gridData.indexOf(row)} isSelected="{selectedRows.indexOf(row) >= 0}">
                             {#if showCheckboxes}
                                 <theme.grid.body.checkbox value={row} index={gridData.indexOf(row)} bind:group={selectedRows} />

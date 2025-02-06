@@ -1,12 +1,12 @@
 import { hash } from "./helpers/hash-helper.js";
-import type { GridColumn, GridFilter, GroupHeader } from "./types/index.js";
+import type { GridColumn, GridFilter, GridRow, GroupHeader } from "./types/index.js";
 
 export class GridFunctions<T> {
     public data: T[] = [];
     public dataUnpaged: T[] = [];
     public dataLength = 0;
-    public groupHeaders: GroupHeader<T>[] = [];
-    public groupHeadersUnpaged: GroupHeader<T>[] = [];
+    public groupHeaders: GroupHeader<GridRow<T>>[] = [];
+    public groupHeadersUnpaged: GroupHeader<GridRow<T>>[] = [];
 
     /**
      * Initializes the GridFunctions instance with the provided data array.
@@ -147,7 +147,7 @@ export class GridFunctions<T> {
         let rest = -1;
         let skippedCount = 0;
 
-        const newGroupHeaders: GroupHeader<T>[] = [];
+        const newGroupHeaders: GroupHeader<GridRow<T>>[] = [];
 
         for (const groupHeader of this.groupHeaders) {
             if (rest == 0) {
@@ -218,7 +218,7 @@ export class GridFunctions<T> {
             return this;
         }
 
-        const groupHeaders: GroupHeader<T>[] = [];
+        const groupHeaders: GroupHeader<GridRow<T>>[] = [];
         const groupDataLength = this.data.reduce((length, row) => {
             const groupValue = groupColumn.accessor
                 ? groupColumn.accessor(row) || ''
@@ -232,8 +232,13 @@ export class GridFunctions<T> {
             const existingGroup = groupHeaders.find(
                 (header) => header.groupKey === groupKey
             );
+
+            let gridRow = {
+                key: Math.random().toString(36).substr(2, 9),
+                data: row
+            }
             if (existingGroup) {
-                existingGroup.data.push(row);
+                existingGroup.data.push(gridRow);
                 return isExpanded ? length + 1 : length;
             }
 
@@ -242,7 +247,7 @@ export class GridFunctions<T> {
                 groupKey,
                 titleData: groupValue,
                 expanded: isExpanded,
-                data: [row],
+                data: [gridRow],
             });
             return isExpanded ? length + 1 : length;
         }, 0);
