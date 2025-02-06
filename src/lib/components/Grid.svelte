@@ -3,7 +3,7 @@
 
     import { PlainTableCssTheme } from '$lib/index.js';
 	import { GridFunctions } from "../GridFunctions.js";
-    import type { GridColumn, GridFilter, GridTheme, GroupHeader, PagingDataInternal } from "$lib/types/index.js";
+    import type { GridColumn, GridFilter, GridRow, GridTheme, GroupHeader, PagingDataInternal } from "$lib/types/index.js";
     import { PagingData } from "$lib/types/index.js";
 
     type T = $$Generic<any>;
@@ -44,7 +44,7 @@
 
     let sortOrderSecondary = $state(1); // 1 for ascending, -1 for descending
     let expandedGroups: ExpandedGroups = $state({});
-    let gridData: T[] = $state([]);
+    let gridData: GridRow<T>[] = $state([]);
     let groupHeaders: GroupHeader<T>[] = $state([]);
     let groupHeadersUnpaged: GroupHeader<T>[] = $state([]);
 
@@ -163,7 +163,12 @@
         .groupBy(groupBy,expandedGroups, groupsExpandedDefault, columns)
         .processPaging(groupBy, paging.currentPage, paging.itemsPerPage));
     run(() => {
-        gridData = grid.data;
+        gridData = grid.data.map((row) => {
+            return {
+                key: Math.random().toString(36).substr(2, 9),
+                data: row
+            }
+        });
         dataUnpaged = grid.dataUnpaged;
         groupHeaders = grid.groupHeaders;
         groupHeadersUnpaged = grid.groupHeadersUnpaged;
@@ -261,7 +266,8 @@
                 {/if}
             {/each}
         {:else}
-            {#each gridData as row, index (getUniqueKey(row))}
+            {#each gridData as data, index (data.key)}
+                {@const row = data.data}
                 <theme.grid.body.row isOdd={(index+1) % 2 == 1} {index} isSelected="{selectedRows.indexOf(row) >= 0}">
                     {#if showCheckboxes}
                         <theme.grid.body.checkbox value={row} bind:group={selectedRows} index={index} />

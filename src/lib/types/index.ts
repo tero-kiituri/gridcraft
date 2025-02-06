@@ -1,5 +1,10 @@
 import type { ComponentType } from "svelte";
 
+export type GridRow<T> = {
+    key: string;
+    data: T;
+}
+
 export type GridColumn<T> = {
     key: string,
     title: string,
