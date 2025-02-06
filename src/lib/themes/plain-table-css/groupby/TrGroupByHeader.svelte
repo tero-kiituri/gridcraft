@@ -1,9 +1,14 @@
-<script>
-    export let isSelected = false;
+<script lang="ts">
+    interface Props {
+        isSelected?: boolean;
+        children?: import('svelte').Snippet;
+    }
+
+    let { isSelected = false, children }: Props = $props();
 </script>
 
 <tr class="gc-tr gc-tr__groupby {isSelected ? 'gc-tr__groupby-selected' : ''}">
-    <slot />
+    {@render children?.()}
 </tr>
 
 <style>

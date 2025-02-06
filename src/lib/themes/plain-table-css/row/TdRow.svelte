@@ -1,5 +1,13 @@
+<script lang="ts">
+    interface Props {
+        children?: import('svelte').Snippet;
+    }
+
+    let { children }: Props = $props();
+</script>
+
 <td class="gc-td">
-    <slot />
+    {@render children?.()}
 </td>
 
 <style>

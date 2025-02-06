@@ -1,6 +1,14 @@
+<script lang="ts">
+    interface Props {
+        children?: import('svelte').Snippet;
+    }
+
+    let { children }: Props = $props();
+</script>
+
 <div class="gc-table-wrapper">
     <table class="gc-table">
-        <slot />
+        {@render children?.()}
     </table>
 </div>
 
