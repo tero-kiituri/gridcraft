@@ -1,6 +1,6 @@
-<script lang="ts">
+    <script lang="ts">
     import Grid from "$lib/components/Grid.svelte";
-   import { GridFooter, type PagingData } from "$lib/index.js";
+    import { GridFooter } from "$lib/index.js";
 
     let data;
     let companies = [
@@ -123,7 +123,7 @@
             city: "City 15",
             country: "Country 15",
             group: "E",
-        }
+        },
     ];
 
     let columns = ["", "id", "name", "catchPhrase", "city", "country", "group"];
@@ -134,17 +134,40 @@
         currentPage: 1,
         itemsPerPageOptions: [5, 10, 15],
     });
-</script>
 
-<label for="groupBySelection">Group By:</label>
-<select id="groupBySelection" bind:value={groupBy}>
+    let searchTerm = $state("");
+
+    let filters = $derived([
+        // Define text search filter
+        {
+            key: "text-search",
+            columns: ["name", "catchPhrase", "city", "country", "group"],
+            filter: (row: any, colKey: string) => {
+                const search = (val: string | null) =>
+                val != undefined &&
+                val
+                    .toString()
+                    .toLocaleLowerCase()
+                    .includes(searchTerm.toLocaleLowerCase());
+                return search(row);
+            },
+            active: searchTerm && searchTerm.length > 0 ? true : false,
+        },
+    ]);
+    </script>
+
+    <label for="groupBySelection">Group By:</label>
+    <select id="groupBySelection" bind:value={groupBy}>
     {#each columns as col}
         <option value={col}>{col}</option>
     {/each}
-</select>
+    </select>
 
-<br /><br />
+    <label for="searchTerm">Search:</label>
+    <input type="text" id="searchTerm" bind:value={searchTerm} />
 
-<Grid data={companies} {groupBy} {paging}/>
+    <br /><br />
 
-<GridFooter bind:paging />
+    <Grid data={companies} {groupBy} {paging} {filters} />
+
+    <GridFooter bind:paging />
